@@ -161,6 +161,24 @@
             border-radius: 12px;
             margin-top: 5px;
         }
+        
+        /* --- ⏱️ ستایلی کات و بەرواری نوێ (Timestamp) --- */
+        .timestamp {
+            display: block;
+            font-size: 10px; /* بچووککردنەوە */
+            opacity: 0.6;
+            margin-top: 5px;
+            direction: ltr; /* بۆ دەرکەوتنی کات بە شێوەیەکی دروست (بۆ نموونە: 10:30 AM) */
+            text-align: right;
+        }
+
+        .chat-message.me .timestamp {
+            color: rgba(255, 255, 255, 0.8); /* سپی کاڵ بۆ نامەی خۆت */
+        }
+
+        .chat-message.other .timestamp {
+            color: #6b7280; /* ڕەنگێکی تۆختر بۆ نامەی ئەوانی تر */
+        }
 
         /* --- ⌨️ ناوچەی نووسین --- */
         .input-area {
@@ -266,28 +284,67 @@
         const storage = firebase.storage();
 
         let currentUsername = null;
+        const authMessageEl = document.getElementById('auth-message');
+
 
         // --- 🛠️ Functions ---
+        
+        // ⭐️ نوێ: فانکشنی تۆمارکردن (Signup) - زیادکردنی ناردنی ڤێریفای ئیمەیڵ ⭐️
         async function signup() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+
+            if (password.length < 6) {
+                authMessageEl.textContent = 'وشەی نهێنی پێویستە لە 6 پیت کەمتر نەبێت.';
+                authMessageEl.style.color = '#ef4444';
+                return;
+            }
+            authMessageEl.textContent = ''; // پاککردنەوەی پەیامەکان
+
             try {
-                await auth.createUserWithEmailAndPassword(email, password);
-            } catch (error) { alert(error.message); }
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.sendEmailVerification();
+                authMessageEl.style.color = '#10b981'; // ڕەنگی سەوز
+                authMessageEl.textContent = '✔️ ئەکاونت دروستکرا! تکایە سندوقی نامەکانت بپشکنە بۆ ڤێریفای ئیمەیڵەکەت.';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+
+            } catch (error) {
+                authMessageEl.style.color = '#ef4444';
+                authMessageEl.textContent = 'هەڵەیەک ڕوویدا: ' + error.message;
+            }
         }
 
+        // ⭐️ نوێ: فانکشنی چوونەژوورەوە (Login) - پشکنینی ڤێریفای ئیمەیڵ ⭐️
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            authMessageEl.textContent = '';
+
             try {
-                await auth.signInWithEmailAndPassword(email, password);
-            } catch (error) { alert(error.message); }
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                if (user.emailVerified) {
+                    // بەکارهێنەر ڤێریفای کراوە، ڕێگەی پێدەدرێت
+                    authMessageEl.textContent = 'سەرکەوتوو بوو.';
+                } else {
+                    // بەکارهێنەر ڤێریفای نەکراوە، چوونەژوورەوەکە هەڵدەوەشێنینەوە
+                    auth.signOut(); // چوونەدەرەوە
+                    authMessageEl.style.color = '#ef4444';
+                    authMessageEl.textContent = '❌ تکایە ئیمەیڵەکەت ڤێریفای بکە پێش چوونە ژوورەوە. (لینکی ڤێریفای بۆ نێردراوە)';
+                }
+
+            } catch (error) {
+                authMessageEl.style.color = '#ef4444';
+                authMessageEl.textContent = 'هەڵەیەک ڕوویدا: ' + error.message;
+            }
         }
 
         function logout() { auth.signOut(); }
 
         auth.onAuthStateChanged(user => {
-            if (user) {
+            if (user && user.emailVerified) { // ⭐️ نوێ: دڵنیابوونەوە لە ڤێریفای لەسەر بارگاویکردنەوەی لاپەڕەش ⭐️
                 currentUsername = user.email.split('@')[0];
                 document.getElementById('username-display').textContent = currentUsername;
                 document.getElementById('auth-container').classList.add('hidden');
@@ -303,34 +360,57 @@
             const input = document.getElementById('message-input');
             const file = document.getElementById('image-upload').files[0];
             const text = input.value.trim();
+            const timestamp = Date.now(); // وەرگرتنی کات
 
             if (!text && !file) return;
 
             if (file) {
-                const ref = storage.ref(`chat/${Date.now()}`);
+                const ref = storage.ref(`chat/${timestamp}`);
                 await ref.put(file);
                 const url = await ref.getDownloadURL();
-                db.ref('messages').push({ username: currentUsername, imageUrl: url, timestamp: Date.now() });
+                db.ref('messages').push({ username: currentUsername, imageUrl: url, timestamp: timestamp });
             }
 
             if (text) {
-                db.ref('messages').push({ username: currentUsername, text: text, timestamp: Date.now() });
+                db.ref('messages').push({ username: currentUsername, text: text, timestamp: timestamp });
             }
 
             input.value = '';
             document.getElementById('image-upload').value = '';
         }
+        
+        // ⭐️ نوێ: فانکشنی فۆرماتکردنی کات و بەروار ⭐️
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                day: 'numeric', 
+                month: 'short' ,
+                year: 'numeric' // دەتوانیت ساڵەکە لاببەیت ئەگەر نەتویست
+            };
+            // بۆ نموونە: 10:57 AM, Dec 13, 2025
+            return date.toLocaleTimeString('en-US', options).replace(',', ' '); 
+        }
 
+        // ⭐️ نوێ: فانکشنی بارکردنی نامەکان - زیادکردنی کات و بەروار ⭐️
         function loadMessages() {
             const msgDiv = document.getElementById('messages');
             db.ref('messages').limitToLast(50).on('child_added', snap => {
                 const data = snap.val();
+                
+                // دڵنیابوونەوە لە بەکارهێنانی کات، ئەگەر نەبوو کاتی ئێستا بەکار دەهێنرێت
+                if (!data.timestamp) data.timestamp = Date.now(); 
+
                 const el = document.createElement('div');
                 el.className = `chat-message ${data.username === currentUsername ? 'me' : 'other'}`;
                 
                 let html = `<span class="username">${data.username}</span>`;
                 if (data.text) html += `<div class="text">${data.text}</div>`;
                 if (data.imageUrl) html += `<div class="message-image"><img src="${data.imageUrl}"></div>`;
+
+                // زیادکردنی کات و بەروار
+                html += `<span class="timestamp">${formatTimestamp(data.timestamp)}</span>`;
                 
                 el.innerHTML = html;
                 msgDiv.appendChild(el);
@@ -342,4 +422,3 @@
     </script>
 </body>
 </html>
-
