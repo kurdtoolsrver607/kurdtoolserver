@@ -4,228 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>چاتی کوردتووڵسێرڤەر</title>
-    
     <style>
-        /* --- 🎨 دیزاینی گشتی --- */
-        :root {
-            --primary-color: #4f46e5;
-            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --glass-bg: rgba(255, 255, 255, 0.9);
-            --my-msg: #4f46e5;
-            --other-msg: #ffffff;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            direction: rtl;
-            background: var(--bg-gradient);
-            background-attachment: fixed;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #1f2937;
-        }
-
-        .container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            width: 95%;
-            max-width: 450px;
-            height: 90vh;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- 🔐 بەشی چوونەژوورەوە --- */
-        #auth-container {
-            padding: 40px 20px;
-            text-align: center;
-            justify-content: center;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            font-size: 24px;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
+        :root { --primary-color: #4f46e5; --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%); --glass-bg: rgba(255, 255, 255, 0.9); --my-msg: #4f46e5; --other-msg: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl; background: var(--bg-gradient); background-attachment: fixed; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #1f2937; }
+        .container { background: var(--glass-bg); backdrop-filter: blur(10px); width: 95%; max-width: 450px; height: 90vh; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        #auth-container { padding: 40px 20px; text-align: center; justify-content: center; }
+        h2 { color: var(--primary-color); margin-bottom: 30px; font-size: 24px; }
+        input { width: 100%; padding: 14px; margin: 10px 0; border: 2px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        button { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-login { background: var(--primary-color); color: white; }
         .btn-login:hover { background: #4338ca; transform: translateY(-2px); }
-
         .btn-signup { background: #e0e7ff; color: var(--primary-color); }
-
-        /* --- 💬 بەشی چات --- */
-        header {
-            padding: 20px;
-            background: white;
-            border-bottom: 1px solid #f3f4f6;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #messages {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            background: #f9fafb;
-        }
-
-        .chat-message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            position: relative;
-            font-size: 15px;
-            line-height: 1.5;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            animation: slideMsg 0.3s ease-out;
-        }
-
-        @keyframes slideMsg {
-            from { opacity: 0; scale: 0.9; }
-            to { opacity: 1; scale: 1; }
-        }
-
-        .chat-message.me {
-            align-self: flex-start;
-            background: var(--my-msg);
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-
-        .chat-message.other {
-            align-self: flex-end;
-            background: var(--other-msg);
-            color: #374151;
-            border-bottom-left-radius: 4px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .username {
-            font-size: 11px;
-            margin-bottom: 4px;
-            display: block;
-            opacity: 0.8;
-            font-weight: bold;
-        }
-
-        .message-image img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-top: 5px;
-        }
-        
-        /* --- ⏱️ ستایلی کات و بەرواری نوێ (Timestamp) --- */
-        .timestamp {
-            display: block;
-            font-size: 10px; /* بچووککردنەوە */
-            opacity: 0.6;
-            margin-top: 5px;
-            direction: ltr; /* بۆ دەرکەوتنی کات بە شێوەیەکی دروست (بۆ نموونە: 10:30 AM) */
-            text-align: right;
-        }
-
-        .chat-message.me .timestamp {
-            color: rgba(255, 255, 255, 0.8); /* سپی کاڵ بۆ نامەی خۆت */
-        }
-
-        .chat-message.other .timestamp {
-            color: #6b7280; /* ڕەنگێکی تۆختر بۆ نامەی ئەوانی تر */
-        }
-
-        /* --- ⌨️ ناوچەی نووسین --- */
-        .input-area {
-            padding: 20px;
-            background: white;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        #message-input {
-            margin: 0;
-            background: #f3f4f6;
-            border: none;
-        }
-
-        .icon-btn {
-            background: #f3f4f6;
-            color: #4b5563;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .send-btn {
-            background: var(--primary-color);
-            color: white;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
+        header { padding: 20px; background: white; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; }
+        #messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: #f9fafb; }
+        .chat-message { max-width: 80%; padding: 12px 16px; border-radius: 18px; position: relative; font-size: 15px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); animation: slideMsg 0.3s ease-out; }
+        @keyframes slideMsg { from { opacity: 0; scale: 0.9; } to { opacity: 1; scale: 1; } }
+        .chat-message.me { align-self: flex-start; background: var(--my-msg); color: white; border-bottom-right-radius: 4px; }
+        .chat-message.other { align-self: flex-end; background: var(--other-msg); color: #374151; border-bottom-left-radius: 4px; border: 1px solid #e5e7eb; }
+        .username { font-size: 11px; margin-bottom: 4px; display: block; opacity: 0.8; font-weight: bold; }
+        .timestamp { display: block; font-size: 10px; opacity: 0.6; margin-top: 5px; direction: ltr; text-align: right; }
+        .input-area { padding: 20px; background: white; display: flex; gap: 10px; align-items: center; }
+        #message-input { margin: 0; background: #f3f4f6; border: none; }
+        .icon-btn { background: #f3f4f6; color: #4b5563; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .send-btn { background: var(--primary-color); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .hidden { display: none !important; }
-
-        #logout-btn {
-            background: #fee2e2;
-            color: #ef4444;
-            padding: 8px 12px;
-            font-size: 12px;
-        }
+        #logout-btn { background: #fee2e2; color: #ef4444; padding: 8px 12px; font-size: 12px; }
+        #typing-indicator { font-size: 11px; color: #4f46e5; font-style: italic; margin-top: 2px; display: block; height: 14px; }
     </style>
 </head>
 <body>
@@ -246,7 +53,10 @@
         <header>
             <div>
                 <b id="username-display" style="color: var(--primary-color);">ناوەکەت</b>
-                <div style="font-size: 10px; color: #10b981;">● ئۆنلاین</div>
+                <div id="status-box">
+                    <span id="online-label" style="font-size: 10px; color: #10b981;">● ئۆنلاین</span>
+                    <span id="typing-indicator"></span>
+                </div>
             </div>
             <button id="logout-btn" onclick="logout()">چوونەدەرەوە</button>
         </header>
@@ -267,7 +77,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     
     <script>
-        // --- ⚙️ Firebase Config ---
         const firebaseConfig = {
             apiKey: "AIzaSyDirc0CpBTWr5gxtZQv4ASZv8VRPP2QT90",
             authDomain: "kurdtoolserver.firebaseapp.com",
@@ -284,134 +93,116 @@
         const storage = firebase.storage();
 
         let currentUsername = null;
+        let typingTimeout;
         const authMessageEl = document.getElementById('auth-message');
 
-
-        // --- 🛠️ Functions ---
-        
-        // ⭐️ نوێ: فانکشنی تۆمارکردن (Signup) - زیادکردنی ناردنی ڤێریفای ئیمەیڵ ⭐️
         async function signup() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
-            if (password.length < 6) {
-                authMessageEl.textContent = 'وشەی نهێنی پێویستە لە 6 پیت کەمتر نەبێت.';
-                authMessageEl.style.color = '#ef4444';
-                return;
-            }
-            authMessageEl.textContent = ''; // پاککردنەوەی پەیامەکان
-
+            if (password.length < 6) { authMessageEl.textContent = 'وشەی نهێنی پێویستە لە 6 پیت کەمتر نەبێت.'; return; }
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 await userCredential.user.sendEmailVerification();
-                authMessageEl.style.color = '#10b981'; // ڕەنگی سەوز
-                authMessageEl.textContent = '✔️ ئەکاونت دروستکرا! تکایە سندوقی نامەکانت بپشکنە بۆ ڤێریفای ئیمەیڵەکەت.';
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-
-            } catch (error) {
-                authMessageEl.style.color = '#ef4444';
-                authMessageEl.textContent = 'هەڵەیەک ڕوویدا: ' + error.message;
-            }
+                authMessageEl.style.color = '#10b981';
+                authMessageEl.textContent = '✔️ ئەکاونت دروستکرا! تکایە ئیمەیڵەکەت ڤێریفای بکە.';
+            } catch (error) { authMessageEl.textContent = 'هەڵە: ' + error.message; }
         }
 
-        // ⭐️ نوێ: فانکشنی چوونەژوورەوە (Login) - پشکنینی ڤێریفای ئیمەیڵ ⭐️
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            authMessageEl.textContent = '';
-
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-
-                if (user.emailVerified) {
-                    // بەکارهێنەر ڤێریفای کراوە، ڕێگەی پێدەدرێت
-                    authMessageEl.textContent = 'سەرکەوتوو بوو.';
-                } else {
-                    // بەکارهێنەر ڤێریفای نەکراوە، چوونەژوورەوەکە هەڵدەوەشێنینەوە
-                    auth.signOut(); // چوونەدەرەوە
-                    authMessageEl.style.color = '#ef4444';
-                    authMessageEl.textContent = '❌ تکایە ئیمەیڵەکەت ڤێریفای بکە پێش چوونە ژوورەوە. (لینکی ڤێریفای بۆ نێردراوە)';
+                if (!userCredential.user.emailVerified) {
+                    auth.signOut();
+                    authMessageEl.textContent = '❌ تکایە ئیمەیڵەکەت ڤێریفای بکە.';
                 }
-
-            } catch (error) {
-                authMessageEl.style.color = '#ef4444';
-                authMessageEl.textContent = 'هەڵەیەک ڕوویدا: ' + error.message;
-            }
+            } catch (error) { authMessageEl.textContent = 'هەڵە: ' + error.message; }
         }
 
-        function logout() { auth.signOut(); }
+        function logout() { 
+            if(currentUsername) db.ref('typing/' + currentUsername).remove();
+            auth.signOut(); 
+        }
 
         auth.onAuthStateChanged(user => {
-            if (user && user.emailVerified) { // ⭐️ نوێ: دڵنیابوونەوە لە ڤێریفای لەسەر بارگاویکردنەوەی لاپەڕەش ⭐️
+            if (user && user.emailVerified) {
                 currentUsername = user.email.split('@')[0];
                 document.getElementById('username-display').textContent = currentUsername;
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('chat-container').classList.remove('hidden');
                 loadMessages();
+                listenForTyping();
             } else {
                 document.getElementById('auth-container').classList.remove('hidden');
                 document.getElementById('chat-container').classList.add('hidden');
             }
         });
 
+        // --- ⌨️ Typing Logic ---
+        document.getElementById('message-input').addEventListener('input', () => {
+            if (!currentUsername) return;
+            db.ref('typing/' + currentUsername).set(true);
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                db.ref('typing/' + currentUsername).remove();
+            }, 2000);
+        });
+
+        function listenForTyping() {
+            const indicator = document.getElementById('typing-indicator');
+            const onlineLabel = document.getElementById('online-label');
+            db.ref('typing').on('value', snap => {
+                const data = snap.val() || {};
+                const typers = Object.keys(data).filter(u => u !== currentUsername);
+                if (typers.length > 0) {
+                    indicator.textContent = `✍️ ${typers.join(', ')} خەریکی نووسینە...`;
+                    onlineLabel.classList.add('hidden');
+                } else {
+                    indicator.textContent = "";
+                    onlineLabel.classList.remove('hidden');
+                }
+            });
+        }
+
         async function sendMessage() {
             const input = document.getElementById('message-input');
             const file = document.getElementById('image-upload').files[0];
             const text = input.value.trim();
-            const timestamp = Date.now(); // وەرگرتنی کات
-
+            const timestamp = Date.now();
             if (!text && !file) return;
+            
+            db.ref('typing/' + currentUsername).remove(); // سڕینەوەی نیشاندەری نووسین دوای ناردن
 
             if (file) {
-                const ref = storage.ref(`chat/${timestamp}`);
+                const ref = storage.ref(`chat/${timestamp}_${currentUsername}`);
                 await ref.put(file);
                 const url = await ref.getDownloadURL();
                 db.ref('messages').push({ username: currentUsername, imageUrl: url, timestamp: timestamp });
             }
-
             if (text) {
                 db.ref('messages').push({ username: currentUsername, text: text, timestamp: timestamp });
             }
-
             input.value = '';
             document.getElementById('image-upload').value = '';
         }
-        
-        // ⭐️ نوێ: فانکشنی فۆرماتکردنی کات و بەروار ⭐️
-        function formatTimestamp(timestamp) {
-            const date = new Date(timestamp);
-            const options = { 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                day: 'numeric', 
-                month: 'short' ,
-                year: 'numeric' // دەتوانیت ساڵەکە لاببەیت ئەگەر نەتویست
-            };
-            // بۆ نموونە: 10:57 AM, Dec 13, 2025
-            return date.toLocaleTimeString('en-US', options).replace(',', ' '); 
+
+        function formatTimestamp(ts) {
+            const date = new Date(ts);
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
 
-        // ⭐️ نوێ: فانکشنی بارکردنی نامەکان - زیادکردنی کات و بەروار ⭐️
         function loadMessages() {
             const msgDiv = document.getElementById('messages');
+            msgDiv.innerHTML = ""; 
             db.ref('messages').limitToLast(50).on('child_added', snap => {
                 const data = snap.val();
-                
-                // دڵنیابوونەوە لە بەکارهێنانی کات، ئەگەر نەبوو کاتی ئێستا بەکار دەهێنرێت
-                if (!data.timestamp) data.timestamp = Date.now(); 
-
                 const el = document.createElement('div');
                 el.className = `chat-message ${data.username === currentUsername ? 'me' : 'other'}`;
-                
                 let html = `<span class="username">${data.username}</span>`;
-                if (data.text) html += `<div class="text">${data.text}</div>`;
-                if (data.imageUrl) html += `<div class="message-image"><img src="${data.imageUrl}"></div>`;
-
-                // زیادکردنی کات و بەروار
-                html += `<span class="timestamp">${formatTimestamp(data.timestamp)}</span>`;
-                
+                if (data.text) html += `<div>${data.text}</div>`;
+                if (data.imageUrl) html += `<div class="message-image"><img src="${data.imageUrl}" style="max-width:100%; border-radius:10px;"></div>`;
+                html += `<span class="timestamp">${formatTimestamp(data.timestamp || Date.now())}</span>`;
                 el.innerHTML = html;
                 msgDiv.appendChild(el);
                 msgDiv.scrollTop = msgDiv.scrollHeight;
